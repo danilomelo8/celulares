@@ -3,97 +3,188 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lista de Precios - Reparación de Celulares</title>
+<title>📱 Reparaciones - Lista de Precios</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'Segoe UI', Tahoma, sans-serif;
-    background: linear-gradient(135deg, #0f172a, #1e293b);
+    background:
+      radial-gradient(circle at 15% 10%, rgba(37,211,102,0.10), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(56,189,248,0.10), transparent 40%),
+      linear-gradient(135deg, #0a0f1c, #0f172a 50%, #1e293b);
     color: #e2e8f0;
     min-height: 100vh;
-    padding: 20px 15px 100px;
+    padding: 20px 15px 110px;
   }
   header {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: 22px;
+    position: relative;
+  }
+  header .icon-top {
+    font-size: 2.4rem;
+    display: block;
+    margin-bottom: 6px;
+    filter: drop-shadow(0 0 12px rgba(37,211,102,0.6));
   }
   header h1 {
-    font-size: 1.8rem;
-    background: linear-gradient(90deg, #25D366, #128C7E);
+    font-size: 1.85rem;
+    background: linear-gradient(90deg, #25D366, #38bdf8);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
+    letter-spacing: 0.5px;
   }
   header p { color: #94a3b8; font-size: 0.95rem; }
 
-  .container { max-width: 800px; margin: 0 auto; }
+  /* Barra de herramientas */
+  .toolbar {
+    max-width: 900px;
+    margin: 0 auto 18px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .buscador {
+    flex: 1;
+    min-width: 220px;
+    position: relative;
+  }
+  .buscador input {
+    width: 100%;
+    padding: 13px 16px 13px 44px;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    background: #16233a;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+  }
+  .buscador input:focus {
+    border-color: #25D366;
+    box-shadow: 0 0 0 3px rgba(37,211,102,0.2);
+  }
+  .buscador input::placeholder { color: #64748b; }
+  .buscador .lupa {
+    position: absolute;
+    left: 15px; top: 50%;
+    transform: translateY(-50%);
+    color: #25D366;
+    font-size: 1.1rem;
+    pointer-events: none;
+  }
+  .btn-admin {
+    padding: 13px 18px;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    background: #16233a;
+    color: #cbd5e1;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-admin:hover { background: #1e2f4d; border-color: #25D366; color: #25D366; }
+  .btn-admin.activo {
+    background: #25D366;
+    color: #0a0f1c;
+    border-color: #25D366;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; }
+
+  /* Contador de resultados */
+  .contador {
+    text-align: center;
+    color: #64748b;
+    font-size: 0.82rem;
+    margin-bottom: 14px;
+  }
 
   /* Acordeón de marca */
   .marca {
-    background: #1e293b;
-    border: 1px solid #334155;
-    border-radius: 12px;
+    background: #111c30;
+    border: 1px solid #263449;
+    border-radius: 14px;
     margin-bottom: 14px;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+    transition: border-color 0.2s;
   }
+  .marca:hover { border-color: #2f4a6b; }
   .marca-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 16px 20px;
     cursor: pointer;
-    background: #1e293b;
     transition: background 0.2s;
     user-select: none;
   }
-  .marca-header:hover { background: #273549; }
+  .marca-header:hover { background: #16243c; }
   .marca-header h2 {
-    font-size: 1.15rem;
+    font-size: 1.12rem;
     color: #f1f5f9;
     display: flex;
     align-items: center;
     gap: 10px;
   }
+  .marca-header h2 .badge-count {
+    font-size: 0.72rem;
+    background: #263449;
+    color: #94a3b8;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
   .marca-header .chevron {
     transition: transform 0.3s;
     color: #25D366;
-    font-size: 1.2rem;
+    font-size: 1.1rem;
   }
   .marca.open .chevron { transform: rotate(180deg); }
 
   .marca-body {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.4s ease;
+    transition: max-height 0.45s ease;
   }
-  .marca.open .marca-body { max-height: 3000px; }
+  .marca.open .marca-body { max-height: 8000px; }
 
   /* Acordeón de modelo */
-  .modelo {
-    border-top: 1px solid #334155;
-  }
+  .modelo { border-top: 1px solid #1e2c44; }
   .modelo-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 14px 20px 14px 32px;
+    padding: 13px 20px 13px 32px;
     cursor: pointer;
-    background: #16233a;
+    background: #0e1830;
     transition: background 0.2s;
     user-select: none;
   }
-  .modelo-header:hover { background: #1c2c47; }
+  .modelo-header:hover { background: #152442; }
   .modelo-header h3 {
-    font-size: 1rem;
+    font-size: 0.96rem;
     color: #cbd5e1;
     font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .modelo-header h3 .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #25D366;
+    flex-shrink: 0;
   }
   .modelo-header .chevron {
     transition: transform 0.3s;
     color: #25D366;
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
   .modelo.open .chevron { transform: rotate(180deg); }
 
@@ -101,39 +192,43 @@
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.4s ease;
-    background: #0f1a2e;
+    background: #0a1324;
   }
-  .modelo.open .modelo-body { max-height: 600px; }
+  .modelo.open .modelo-body { max-height: 700px; }
 
   /* Tabla de precios */
   .precios {
     padding: 14px 20px 18px 32px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 9px;
   }
   .precio-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 10px 14px;
-    background: #1a2740;
-    border-radius: 8px;
+    background: #12203a;
+    border-radius: 9px;
     border-left: 3px solid #25D366;
+    gap: 10px;
   }
   .precio-item .label {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.92rem;
+    font-size: 0.9rem;
     color: #cbd5e1;
+    flex-wrap: wrap;
   }
+  .precio-item .label .ico { font-size: 1rem; }
   .precio-item .label .tag {
-    font-size: 0.7rem;
-    padding: 2px 7px;
+    font-size: 0.66rem;
+    padding: 2px 8px;
     border-radius: 20px;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 0.3px;
   }
   .tag-original { background: #16a34a; color: #fff; }
   .tag-alternativa { background: #f59e0b; color: #1e293b; }
@@ -143,11 +238,138 @@
     font-size: 1rem;
     white-space: nowrap;
   }
-  .precio-item .no-disp {
-    color: #64748b;
-    font-size: 0.85rem;
-    font-style: italic;
+  .precio-item .no-disp { color: #64748b; font-size: 0.83rem; font-style: italic; }
+
+  /* Inputs de edición */
+  .edit-input {
+    width: 110px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 1px solid #25D366;
+    background: #0a1324;
+    color: #25D366;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-align: right;
+    outline: none;
   }
+  .edit-input:focus { box-shadow: 0 0 0 2px rgba(37,211,102,0.4); }
+
+  /* Mensaje sin resultados */
+  .sin-resultados {
+    text-align: center;
+    padding: 40px 20px;
+    color: #64748b;
+    font-size: 0.95rem;
+  }
+  .sin-resultados .emoji { font-size: 2rem; display: block; margin-bottom: 10px; }
+
+  /* Modal de clave */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(2,6,15,0.85);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+    padding: 20px;
+  }
+  .modal-overlay.show { opacity: 1; pointer-events: auto; }
+  .modal {
+    background: #111c30;
+    border: 1px solid #263449;
+    border-radius: 16px;
+    padding: 28px 24px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    transform: scale(0.9);
+    transition: transform 0.25s;
+  }
+  .modal-overlay.show .modal { transform: scale(1); }
+  .modal .candado { font-size: 2.4rem; margin-bottom: 10px; display: block; }
+  .modal h3 { color: #f1f5f9; margin-bottom: 6px; font-size: 1.15rem; }
+  .modal p { color: #94a3b8; font-size: 0.85rem; margin-bottom: 18px; }
+  .modal input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    background: #0a1324;
+    color: #e2e8f0;
+    font-size: 1rem;
+    text-align: center;
+    outline: none;
+    margin-bottom: 14px;
+    letter-spacing: 2px;
+  }
+  .modal input:focus { border-color: #25D366; }
+  .modal .error {
+    color: #f87171;
+    font-size: 0.82rem;
+    margin-bottom: 12px;
+    min-height: 16px;
+  }
+  .modal-botones { display: flex; gap: 10px; }
+  .modal-botones button {
+    flex: 1;
+    padding: 11px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .btn-cancelar { background: #263449; color: #cbd5e1; }
+  .btn-cancelar:hover { background: #33475f; }
+  .btn-aceptar { background: #25D366; color: #0a0f1c; }
+  .btn-aceptar:hover { background: #1fbf5c; }
+
+  /* Panel admin */
+  .admin-panel {
+    max-width: 900px;
+    margin: 0 auto 16px;
+    background: linear-gradient(135deg, rgba(37,211,102,0.12), rgba(56,189,248,0.08));
+    border: 1px solid #25D366;
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .admin-panel.show { display: flex; }
+  .admin-panel .info {
+    color: #86efac;
+    font-size: 0.88rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .admin-panel .acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+  .admin-panel button {
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+  .btn-guardar { background: #25D366; color: #0a0f1c; }
+  .btn-guardar:hover { background: #1fbf5c; }
+  .btn-reset { background: #dc2626; color: #fff; }
+  .btn-reset:hover { background: #b91c1c; }
+  .btn-salir { background: #334155; color: #cbd5e1; }
+  .btn-salir:hover { background: #475569; }
 
   /* Botón WhatsApp flotante */
   .whatsapp-btn {
@@ -156,42 +378,39 @@
     right: 25px;
     background: #25D366;
     color: #fff;
-    width: 60px;
-    height: 60px;
+    width: 62px;
+    height: 62px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
     text-decoration: none;
-    z-index: 1000;
+    z-index: 1500;
     transition: transform 0.2s, box-shadow 0.2s;
     animation: pulse 2s infinite;
   }
-  .whatsapp-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.7);
-  }
-  .whatsapp-btn svg { width: 34px; height: 34px; fill: #fff; }
-
+  .whatsapp-btn:hover { transform: scale(1.1); }
+  .whatsapp-btn svg { width: 36px; height: 36px; fill: #fff; }
   @keyframes pulse {
     0%, 100% { box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5); }
-    50% { box-shadow: 0 6px 30px rgba(37, 211, 102, 0.9); }
+    50% { box-shadow: 0 6px 32px rgba(37, 211, 102, 0.95); }
   }
 
-  /* Nota aclaratoria */
   .nota {
     text-align: center;
     font-size: 0.8rem;
     color: #64748b;
     margin: 25px auto 10px;
-    max-width: 600px;
-    line-height: 1.5;
+    max-width: 650px;
+    line-height: 1.6;
   }
+  .nota strong { color: #25D366; }
 
   @media (max-width: 500px) {
     header h1 { font-size: 1.4rem; }
     .precio-item { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .edit-input { width: 100%; text-align: left; }
   }
 </style>
 </head>
@@ -199,153 +418,144 @@
 
 <div class="container">
   <header>
-    <h1>📱 Lista de Precios - Reparaciones</h1>
-    <p>Presupuestos orientativos · Consultá por tu modelo</p>
+    <span class="icon-top">🔧📱</span>
+    <h1>Reparaciones de Celulares</h1>
+    <p>Lista de precios · Presupuestos al instante</p>
   </header>
+
+  <div class="toolbar">
+    <div class="buscador">
+      <span class="lupa">🔍</span>
+      <input type="text" id="buscador" placeholder="Buscar modelo... (ej: A54, iPhone 13, G84)">
+    </div>
+    <button class="btn-admin" id="btnAdmin">🔐 Modo edición</button>
+  </div>
+
+  <div class="admin-panel" id="adminPanel">
+    <div class="info">✏️ Modo edición activo — tocá los precios para cambiarlos</div>
+    <div class="acciones">
+      <button class="btn-guardar" id="btnGuardar">💾 Guardar</button>
+      <button class="btn-reset" id="btnReset">↺ Restaurar</button>
+      <button class="btn-salir" id="btnSalir">Cerrar</button>
+    </div>
+  </div>
+
+  <div class="contador" id="contador"></div>
 
   <div id="lista"></div>
 
   <p class="nota">
-    * Los precios pueden variar según disponibilidad de stock.<br>
-    * Pantalla: opción Original y Alternativa · Batería y Placa de carga: solo Original.
+    * Precios orientativos, pueden variar según stock.<br>
+    <strong>Pantalla:</strong> Original / Alternativa · <strong>Batería y Placa de carga:</strong> solo Original.
   </p>
 </div>
 
-<!-- Botón flotante de WhatsApp -->
+<!-- Botón WhatsApp -->
 <a class="whatsapp-btn"
    href="https://wa.me/5491100000000?text=Hola!%20Quiero%20consultar%20por%20una%20reparaci%C3%B3n%20de%20celular"
-   target="_blank"
-   rel="noopener"
-   aria-label="Consultar por WhatsApp">
+   target="_blank" rel="noopener" aria-label="Consultar por WhatsApp">
   <svg viewBox="0 0 32 32">
     <path d="M16.004 0h-.008C7.174 0 0 7.176 0 16c0 3.5 1.128 6.744 3.046 9.378L1.054 31.29l6.13-1.958A15.9 15.9 0 0 0 16.004 32C24.83 32 32 24.822 32 16S24.83 0 16.004 0zm9.32 22.594c-.386 1.09-2.25 2.088-3.104 2.166-.854.078-1.65.372-5.55-1.158-4.694-1.848-7.65-6.606-7.884-6.912-.234-.306-1.884-2.508-1.884-4.782s1.194-3.396 1.62-3.864c.426-.468.93-.585 1.24-.585.31 0 .62.004.89.016.286.014.67-.108 1.046.798.386.93 1.31 3.204 1.426 3.436.116.234.194.506.038.812-.156.306-.234.498-.468.766-.234.268-.494.598-.704.802-.234.234-.478.488-.206.956.272.468 1.208 1.992 2.594 3.226 1.782 1.586 3.284 2.078 3.752 2.312.468.234.742.196 1.014-.118.272-.312 1.166-1.36 1.478-1.828.312-.468.624-.39 1.052-.234.428.156 2.704 1.276 3.168 1.508.464.234.774.35.888.544.114.194.114 1.128-.272 2.218z"/>
   </svg>
 </a>
 
+<!-- Modal clave -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <span class="candado">🔐</span>
+    <h3>Acceso restringido</h3>
+    <p>Ingresá la clave para editar los precios</p>
+    <input type="password" id="claveInput" placeholder="• • • • • • • •" autocomplete="off">
+    <div class="error" id="claveError"></div>
+    <div class="modal-botones">
+      <button class="btn-cancelar" id="btnCancelar">Cancelar</button>
+      <button class="btn-aceptar" id="btnAceptar">Ingresar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ============================================================
-   CONFIGURACIÓN DE PRECIOS
-   Editá esta sección con tus modelos y precios reales.
-   - pantallaOriginal: precio pantalla original
-   - pantallaAlternativa: precio pantalla alternativa
-   - bateria: precio batería (solo original)
-   - placaCarga: precio placa de carga (solo original)
-   Si un precio no aplica, poné null.
+   🔑 CLAVE DE ADMINISTRADOR
    ============================================================ */
-const datos = [
+const CLAVE_ADMIN = "Cabj1905";
+
+/* ============================================================
+   📋 BASE DE DATOS DE MODELOS Y PRECIOS
+   Todos los precios son de ejemplo: editalos desde la web
+   con el "Modo edición" o directamente acá.
+   ============================================================ */
+const PRECIOS_DEFAULT = [
   {
     marca: "Samsung",
+    icono: "🟦",
     modelos: [
       { nombre: "Galaxy A03", pantallaOriginal: 45000, pantallaAlternativa: 28000, bateria: 18000, placaCarga: 15000 },
+      { nombre: "Galaxy A03s", pantallaOriginal: 47000, pantallaAlternativa: 29000, bateria: 18500, placaCarga: 15500 },
+      { nombre: "Galaxy A04", pantallaOriginal: 48000, pantallaAlternativa: 30000, bateria: 19000, placaCarga: 16000 },
+      { nombre: "Galaxy A04e", pantallaOriginal: 48000, pantallaAlternativa: 30000, bateria: 19000, placaCarga: 16000 },
+      { nombre: "Galaxy A05", pantallaOriginal: 50000, pantallaAlternativa: 31000, bateria: 19500, placaCarga: 16500 },
+      { nombre: "Galaxy A05s", pantallaOriginal: 52000, pantallaAlternativa: 32000, bateria: 20000, placaCarga: 17000 },
+      { nombre: "Galaxy A10", pantallaOriginal: 42000, pantallaAlternativa: 26000, bateria: 17000, placaCarga: 14000 },
+      { nombre: "Galaxy A10s", pantallaOriginal: 44000, pantallaAlternativa: 27000, bateria: 17500, placaCarga: 14500 },
+      { nombre: "Galaxy A11", pantallaOriginal: 45000, pantallaAlternativa: 28000, bateria: 18000, placaCarga: 15000 },
+      { nombre: "Galaxy A12", pantallaOriginal: 47000, pantallaAlternativa: 29000, bateria: 18500, placaCarga: 15500 },
       { nombre: "Galaxy A13", pantallaOriginal: 55000, pantallaAlternativa: 35000, bateria: 20000, placaCarga: 17000 },
+      { nombre: "Galaxy A14", pantallaOriginal: 60000, pantallaAlternativa: 38000, bateria: 22000, placaCarga: 18000 },
+      { nombre: "Galaxy A15", pantallaOriginal: 65000, pantallaAlternativa: 40000, bateria: 23000, placaCarga: 19000 },
+      { nombre: "Galaxy A20", pantallaOriginal: 52000, pantallaAlternativa: 32000, bateria: 19000, placaCarga: 16000 },
+      { nombre: "Galaxy A20s", pantallaOriginal: 54000, pantallaAlternativa: 33000, bateria: 19500, placaCarga: 16500 },
+      { nombre: "Galaxy A21s", pantallaOriginal: 56000, pantallaAlternativa: 34000, bateria: 20000, placaCarga: 17000 },
+      { nombre: "Galaxy A22", pantallaOriginal: 60000, pantallaAlternativa: 37000, bateria: 21000, placaCarga: 17500 },
+      { nombre: "Galaxy A23", pantallaOriginal: 63000, pantallaAlternativa: 39000, bateria: 22000, placaCarga: 18000 },
+      { nombre: "Galaxy A24", pantallaOriginal: 66000, pantallaAlternativa: 41000, bateria: 23000, placaCarga: 18500 },
+      { nombre: "Galaxy A30", pantallaOriginal: 58000, pantallaAlternativa: 35000, bateria: 20000, placaCarga: 17000 },
+      { nombre: "Galaxy A31", pantallaOriginal: 62000, pantallaAlternativa: 38000, bateria: 21000, placaCarga: 18000 },
       { nombre: "Galaxy A32", pantallaOriginal: 78000, pantallaAlternativa: 48000, bateria: 24000, placaCarga: 19000 },
+      { nombre: "Galaxy A33", pantallaOriginal: 80000, pantallaAlternativa: 50000, bateria: 25000, placaCarga: 20000 },
+      { nombre: "Galaxy A34", pantallaOriginal: 85000, pantallaAlternativa: 53000, bateria: 26000, placaCarga: 21000 },
+      { nombre: "Galaxy A35", pantallaOriginal: 90000, pantallaAlternativa: 56000, bateria: 27000, placaCarga: 22000 },
+      { nombre: "Galaxy A50", pantallaOriginal: 70000, pantallaAlternativa: 43000, bateria: 22000, placaCarga: 18500 },
+      { nombre: "Galaxy A51", pantallaOriginal: 74000, pantallaAlternativa: 45000, bateria: 23000, placaCarga: 19000 },
+      { nombre: "Galaxy A52", pantallaOriginal: 82000, pantallaAlternativa: 51000, bateria: 25000, placaCarga: 20000 },
+      { nombre: "Galaxy A53", pantallaOriginal: 90000, pantallaAlternativa: 56000, bateria: 27000, placaCarga: 22000 },
       { nombre: "Galaxy A54", pantallaOriginal: 120000, pantallaAlternativa: 72000, bateria: 32000, placaCarga: 25000 },
-      { nombre: "Galaxy S21", pantallaOriginal: 180000, pantallaAlternativa: 110000, bateria: 38000, placaCarga: 28000 }
-    ]
-  },
-  {
-    marca: "Apple",
-    modelos: [
-      { nombre: "iPhone 11", pantallaOriginal: 150000, pantallaAlternativa: 85000, bateria: 45000, placaCarga: 35000 },
-      { nombre: "iPhone 12", pantallaOriginal: 190000, pantallaAlternativa: 110000, bateria: 52000, placaCarga: 40000 },
-      { nombre: "iPhone 13", pantallaOriginal: 240000, pantallaAlternativa: 145000, bateria: 60000, placaCarga: 48000 },
-      { nombre: "iPhone 14", pantallaOriginal: 290000, pantallaAlternativa: 175000, bateria: 68000, placaCarga: 55000 }
-    ]
-  },
-  {
-    marca: "Xiaomi",
-    modelos: [
-      { nombre: "Redmi Note 10", pantallaOriginal: 52000, pantallaAlternativa: 32000, bateria: 19000, placaCarga: 16000 },
-      { nombre: "Redmi Note 12", pantallaOriginal: 68000, pantallaAlternativa: 42000, bateria: 23000, placaCarga: 18000 },
-      { nombre: "Redmi 9A", pantallaOriginal: 38000, pantallaAlternativa: 24000, bateria: 16000, placaCarga: 13000 },
-      { nombre: "POCO X5", pantallaOriginal: 85000, pantallaAlternativa: 52000, bateria: 27000, placaCarga: 21000 }
-    ]
-  },
-  {
-    marca: "Motorola",
-    modelos: [
-      { nombre: "Moto E22", pantallaOriginal: 40000, pantallaAlternativa: 25000, bateria: 17000, placaCarga: 14000 },
-      { nombre: "Moto G32", pantallaOriginal: 58000, pantallaAlternativa: 36000, bateria: 21000, placaCarga: 17000 },
-      { nombre: "Moto G84", pantallaOriginal: 92000, pantallaAlternativa: 58000, bateria: 26000, placaCarga: 22000 }
-    ]
-  }
-];
-
-/* ============================================================
-   RENDER DINÁMICO
-   ============================================================ */
-const listaEl = document.getElementById('lista');
-
-function formatearPrecio(valor) {
-  if (valor === null || valor === undefined) return null;
-  return '$' + valor.toLocaleString('es-AR');
-}
-
-function crearItem(label, tag, tagClass, precio) {
-  const precioTxt = formatearPrecio(precio);
-  return `
-    <div class="precio-item">
-      <span class="label">
-        ${label}
-        ${tag ? `<span class="tag ${tagClass}">${tag}</span>` : ''}
-      </span>
-      ${precioTxt
-        ? `<span class="precio">${precioTxt}</span>`
-        : `<span class="no-disp">No disponible</span>`}
-    </div>
-  `;
-}
-
-datos.forEach((marcaData, iMarca) => {
-  const marcaDiv = document.createElement('div');
-  marcaDiv.className = 'marca';
-
-  const modelosHTML = marcaData.modelos.map((m, iMod) => `
-    <div class="modelo">
-      <div class="modelo-header" data-toggle="modelo">
-        <h3>${m.nombre}</h3>
-        <span class="chevron">▼</span>
-      </div>
-      <div class="modelo-body">
-        <div class="precios">
-          ${crearItem('Pantalla', 'Original', 'tag-original', m.pantallaOriginal)}
-          ${crearItem('Pantalla', 'Alternativa', 'tag-alternativa', m.pantallaAlternativa)}
-          ${crearItem('Batería', 'Original', 'tag-original', m.bateria)}
-          ${crearItem('Placa de carga', 'Original', 'tag-original', m.placaCarga)}
-        </div>
-      </div>
-    </div>
-  `).join('');
-
-  marcaDiv.innerHTML = `
-    <div class="marca-header" data-toggle="marca">
-      <h2>📱 ${marcaData.marca}</h2>
-      <span class="chevron">▼</span>
-    </div>
-    <div class="marca-body">
-      ${modelosHTML}
-    </div>
-  `;
-
-  listaEl.appendChild(marcaDiv);
-});
-
-/* ============================================================
-   INTERACCIÓN ACORDEÓN
-   ============================================================ */
-document.querySelectorAll('[data-toggle="marca"]').forEach(header => {
-  header.addEventListener('click', () => {
-    header.parentElement.classList.toggle('open');
-  });
-});
-
-document.querySelectorAll('[data-toggle="modelo"]').forEach(header => {
-  header.addEventListener('click', (e) => {
-    e.stopPropagation();
-    header.parentElement.classList.toggle('open');
-  });
-});
-</script>
-
-</body>
-</html>
+      { nombre: "Galaxy A55", pantallaOriginal: 130000, pantallaAlternativa: 78000, bateria: 34000, placaCarga: 26000 },
+      { nombre: "Galaxy A70", pantallaOriginal: 78000, pantallaAlternativa: 48000, bateria: 24000, placaCarga: 19000 },
+      { nombre: "Galaxy A71", pantallaOriginal: 85000, pantallaAlternativa: 53000, bateria: 26000, placaCarga: 20000 },
+      { nombre: "Galaxy A72", pantallaOriginal: 92000, pantallaAlternativa: 58000, bateria: 28000, placaCarga: 22000 },
+      { nombre: "Galaxy A73", pantallaOriginal: 100000, pantallaAlternativa: 62000, bateria: 30000, placaCarga: 24000 },
+      { nombre: "Galaxy S8", pantallaOriginal: 95000, pantallaAlternativa: 58000, bateria: 28000, placaCarga: 22000 },
+      { nombre: "Galaxy S8+", pantallaOriginal: 105000, pantallaAlternativa: 65000, bateria: 30000, placaCarga: 23000 },
+      { nombre: "Galaxy S9", pantallaOriginal: 110000, pantallaAlternativa: 68000, bateria: 32000, placaCarga: 24000 },
+      { nombre: "Galaxy S9+", pantallaOriginal: 120000, pantallaAlternativa: 74000, bateria: 34000, placaCarga: 25000 },
+      { nombre: "Galaxy S10", pantallaOriginal: 135000, pantallaAlternativa: 82000, bateria: 36000, placaCarga: 27000 },
+      { nombre: "Galaxy S10+", pantallaOriginal: 150000, pantallaAlternativa: 90000, bateria: 38000, placaCarga: 28000 },
+      { nombre: "Galaxy S20", pantallaOriginal: 165000, pantallaAlternativa: 100000, bateria: 40000, placaCarga: 30000 },
+      { nombre: "Galaxy S20+", pantallaOriginal: 180000, pantallaAlternativa: 110000, bateria: 42000, placaCarga: 31000 },
+      { nombre: "Galaxy S20 Ultra", pantallaOriginal: 210000, pantallaAlternativa: 130000, bateria: 45000, placaCarga: 33000 },
+      { nombre: "Galaxy S21", pantallaOriginal: 180000, pantallaAlternativa: 110000, bateria: 38000, placaCarga: 28000 },
+      { nombre: "Galaxy S21+", pantallaOriginal: 200000, pantallaAlternativa: 122000, bateria: 40000, placaCarga: 30000 },
+      { nombre: "Galaxy S21 Ultra", pantallaOriginal: 240000, pantallaAlternativa: 148000, bateria: 48000, placaCarga: 34000 },
+      { nombre: "Galaxy S22", pantallaOriginal: 210000, pantallaAlternativa: 130000, bateria: 42000, placaCarga: 30000 },
+      { nombre: "Galaxy S22+", pantallaOriginal: 235000, pantallaAlternativa: 145000, bateria: 45000, placaCarga: 32000 },
+      { nombre: "Galaxy S22 Ultra", pantallaOriginal: 280000, pantallaAlternativa: 172000, bateria: 52000, placaCarga: 36000 },
+      { nombre: "Galaxy S23", pantallaOriginal: 250000, pantallaAlternativa: 155000, bateria: 48000, placaCarga: 34000 },
+      { nombre: "Galaxy S23+", pantallaOriginal: 275000, pantallaAlternativa: 170000, bateria: 50000, placaCarga: 35000 },
+      { nombre: "Galaxy S23 Ultra", pantallaOriginal: 330000, pantallaAlternativa: 205000, bateria: 58000, placaCarga: 40000 },
+      { nombre: "Galaxy S24", pantallaOriginal: 290000, pantallaAlternativa: 180000, bateria: 52000, placaCarga: 36000 },
+      { nombre: "Galaxy S24+", pantallaOriginal: 320000, pantallaAlternativa: 198000, bateria: 55000, placaCarga: 38000 },
+      { nombre: "Galaxy S24 Ultra", pantallaOriginal: 380000, pantallaAlternativa: 235000, bateria: 62000, placaCarga: 42000 },
+      { nombre: "Galaxy S25", pantallaOriginal: 340000, pantallaAlternativa: 210000, bateria: 58000, placaCarga: 40000 },
+      { nombre: "Galaxy S25+", pantallaOriginal: 370000, pantallaAlternativa: 230000, bateria: 60000, placaCarga: 42000 },
+      { nombre: "Galaxy S25 Ultra", pantallaOriginal: 430000, pantallaAlternativa: 268000, bateria: 68000, placaCarga: 46000 },
+      { nombre: "Galaxy S26", pantallaOriginal: 380000, pantallaAlternativa: 235000, bateria: 62000, placaCarga: 44000 },
+      { nombre: "Galaxy S26+", pantallaOriginal: 410000, pantallaAlternativa: 255000, bateria: 65000, placaCarga: 46000 },
+      { nombre: "Galaxy S26 Ultra", pantallaOriginal: 470000, pantallaAlternativa: 295000, bateria: 72000, placaCarga: 50000 },
+      { nombre: "Galaxy Note 8", pantallaOriginal: 115000, pantallaAlternativa: 70000, bateria: 32000, placaCarga: 25000 },
+      { nombre: "Galaxy Note 9", pantallaOriginal: 130000, pantallaAlternativa: 80000, bateria: 35000, placaCarga: 27000 },
+      { nombre: "Galaxy Note 10", pantallaOriginal: 155000, pantallaAlternativa: 95000, bateria: 38000, placaCarga: 29000 },
+      { nombre: "Galaxy Note 10+", pantallaOriginal: 175000, pantallaAlternativa: 108000, bateria: 40000, placaCarga: 31000 },
+      { nombre: "Galaxy Note 20", pantallaOriginal: 200000, pantallaAlternativa: 122000, bateria: 44000, placaCarga: 33000 },
+      { nombre: "Galaxy Note 20 Ultra", pantallaOriginal: 240000, pantallaAlternativa: 148000, bateria: 48000, placaCarga: 35000 },
+      { nombre: "Galaxy Z Flip 3", pantallaOriginal: 260000, pantallaAlternativa: 160000, bateria: 50000
