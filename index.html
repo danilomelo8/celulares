@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista de Precios - Reparación de Celulares</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: #e2e8f0;
+    min-height: 100vh;
+    padding: 20px 15px 100px;
+  }
+  header {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  header h1 {
+    font-size: 1.8rem;
+    background: linear-gradient(90deg, #25D366, #128C7E);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+  header p { color: #94a3b8; font-size: 0.95rem; }
+
+  .container { max-width: 800px; margin: 0 auto; }
+
+  /* Acordeón de marca */
+  .marca {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  }
+  .marca-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    cursor: pointer;
+    background: #1e293b;
+    transition: background 0.2s;
+    user-select: none;
+  }
+  .marca-header:hover { background: #273549; }
+  .marca-header h2 {
+    font-size: 1.15rem;
+    color: #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .marca-header .chevron {
+    transition: transform 0.3s;
+    color: #25D366;
+    font-size: 1.2rem;
+  }
+  .marca.open .chevron { transform: rotate(180deg); }
+
+  .marca-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+  }
+  .marca.open .marca-body { max-height: 3000px; }
+
+  /* Acordeón de modelo */
+  .modelo {
+    border-top: 1px solid #334155;
+  }
+  .modelo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px 14px 32px;
+    cursor: pointer;
+    background: #16233a;
+    transition: background 0.2s;
+    user-select: none;
+  }
+  .modelo-header:hover { background: #1c2c47; }
+  .modelo-header h3 {
+    font-size: 1rem;
+    color: #cbd5e1;
+    font-weight: 500;
+  }
+  .modelo-header .chevron {
+    transition: transform 0.3s;
+    color: #25D366;
+    font-size: 1rem;
+  }
+  .modelo.open .chevron { transform: rotate(180deg); }
+
+  .modelo-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease;
+    background: #0f1a2e;
+  }
+  .modelo.open .modelo-body { max-height: 600px; }
+
+  /* Tabla de precios */
+  .precios {
+    padding: 14px 20px 18px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .precio-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background: #1a2740;
+    border-radius: 8px;
+    border-left: 3px solid #25D366;
+  }
+  .precio-item .label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.92rem;
+    color: #cbd5e1;
+  }
+  .precio-item .label .tag {
+    font-size: 0.7rem;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .tag-original { background: #16a34a; color: #fff; }
+  .tag-alternativa { background: #f59e0b; color: #1e293b; }
+  .precio-item .precio {
+    font-weight: 700;
+    color: #25D366;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+  .precio-item .no-disp {
+    color: #64748b;
+    font-size: 0.85rem;
+    font-style: italic;
+  }
+
+  /* Botón WhatsApp flotante */
+  .whatsapp-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background: #25D366;
+    color: #fff;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+    text-decoration: none;
+    z-index: 1000;
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: pulse 2s infinite;
+  }
+  .whatsapp-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(37, 211, 102, 0.7);
+  }
+  .whatsapp-btn svg { width: 34px; height: 34px; fill: #fff; }
+
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5); }
+    50% { box-shadow: 0 6px 30px rgba(37, 211, 102, 0.9); }
+  }
+
+  /* Nota aclaratoria */
+  .nota {
+    text-align: center;
+    font-size: 0.8rem;
+    color: #64748b;
+    margin: 25px auto 10px;
+    max-width: 600px;
+    line-height: 1.5;
+  }
+
+  @media (max-width: 500px) {
+    header h1 { font-size: 1.4rem; }
+    .precio-item { flex-direction: column; align-items: flex-start; gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>📱 Lista de Precios - Reparaciones</h1>
+    <p>Presupuestos orientativos · Consultá por tu modelo</p>
+  </header>
+
+  <div id="lista"></div>
+
+  <p class="nota">
+    * Los precios pueden variar según disponibilidad de stock.<br>
+    * Pantalla: opción Original y Alternativa · Batería y Placa de carga: solo Original.
+  </p>
+</div>
+
+<!-- Botón flotante de WhatsApp -->
+<a class="whatsapp-btn"
+   href="https://wa.me/5491100000000?text=Hola!%20Quiero%20consultar%20por%20una%20reparaci%C3%B3n%20de%20celular"
+   target="_blank"
+   rel="noopener"
+   aria-label="Consultar por WhatsApp">
+  <svg viewBox="0 0 32 32">
+    <path d="M16.004 0h-.008C7.174 0 0 7.176 0 16c0 3.5 1.128 6.744 3.046 9.378L1.054 31.29l6.13-1.958A15.9 15.9 0 0 0 16.004 32C24.83 32 32 24.822 32 16S24.83 0 16.004 0zm9.32 22.594c-.386 1.09-2.25 2.088-3.104 2.166-.854.078-1.65.372-5.55-1.158-4.694-1.848-7.65-6.606-7.884-6.912-.234-.306-1.884-2.508-1.884-4.782s1.194-3.396 1.62-3.864c.426-.468.93-.585 1.24-.585.31 0 .62.004.89.016.286.014.67-.108 1.046.798.386.93 1.31 3.204 1.426 3.436.116.234.194.506.038.812-.156.306-.234.498-.468.766-.234.268-.494.598-.704.802-.234.234-.478.488-.206.956.272.468 1.208 1.992 2.594 3.226 1.782 1.586 3.284 2.078 3.752 2.312.468.234.742.196 1.014-.118.272-.312 1.166-1.36 1.478-1.828.312-.468.624-.39 1.052-.234.428.156 2.704 1.276 3.168 1.508.464.234.774.35.888.544.114.194.114 1.128-.272 2.218z"/>
+  </svg>
+</a>
+
+<script>
+/* ============================================================
+   CONFIGURACIÓN DE PRECIOS
+   Editá esta sección con tus modelos y precios reales.
+   - pantallaOriginal: precio pantalla original
+   - pantallaAlternativa: precio pantalla alternativa
+   - bateria: precio batería (solo original)
+   - placaCarga: precio placa de carga (solo original)
+   Si un precio no aplica, poné null.
+   ============================================================ */
+const datos = [
+  {
+    marca: "Samsung",
+    modelos: [
+      { nombre: "Galaxy A03", pantallaOriginal: 45000, pantallaAlternativa: 28000, bateria: 18000, placaCarga: 15000 },
+      { nombre: "Galaxy A13", pantallaOriginal: 55000, pantallaAlternativa: 35000, bateria: 20000, placaCarga: 17000 },
+      { nombre: "Galaxy A32", pantallaOriginal: 78000, pantallaAlternativa: 48000, bateria: 24000, placaCarga: 19000 },
+      { nombre: "Galaxy A54", pantallaOriginal: 120000, pantallaAlternativa: 72000, bateria: 32000, placaCarga: 25000 },
+      { nombre: "Galaxy S21", pantallaOriginal: 180000, pantallaAlternativa: 110000, bateria: 38000, placaCarga: 28000 }
+    ]
+  },
+  {
+    marca: "Apple",
+    modelos: [
+      { nombre: "iPhone 11", pantallaOriginal: 150000, pantallaAlternativa: 85000, bateria: 45000, placaCarga: 35000 },
+      { nombre: "iPhone 12", pantallaOriginal: 190000, pantallaAlternativa: 110000, bateria: 52000, placaCarga: 40000 },
+      { nombre: "iPhone 13", pantallaOriginal: 240000, pantallaAlternativa: 145000, bateria: 60000, placaCarga: 48000 },
+      { nombre: "iPhone 14", pantallaOriginal: 290000, pantallaAlternativa: 175000, bateria: 68000, placaCarga: 55000 }
+    ]
+  },
+  {
+    marca: "Xiaomi",
+    modelos: [
+      { nombre: "Redmi Note 10", pantallaOriginal: 52000, pantallaAlternativa: 32000, bateria: 19000, placaCarga: 16000 },
+      { nombre: "Redmi Note 12", pantallaOriginal: 68000, pantallaAlternativa: 42000, bateria: 23000, placaCarga: 18000 },
+      { nombre: "Redmi 9A", pantallaOriginal: 38000, pantallaAlternativa: 24000, bateria: 16000, placaCarga: 13000 },
+      { nombre: "POCO X5", pantallaOriginal: 85000, pantallaAlternativa: 52000, bateria: 27000, placaCarga: 21000 }
+    ]
+  },
+  {
+    marca: "Motorola",
+    modelos: [
+      { nombre: "Moto E22", pantallaOriginal: 40000, pantallaAlternativa: 25000, bateria: 17000, placaCarga: 14000 },
+      { nombre: "Moto G32", pantallaOriginal: 58000, pantallaAlternativa: 36000, bateria: 21000, placaCarga: 17000 },
+      { nombre: "Moto G84", pantallaOriginal: 92000, pantallaAlternativa: 58000, bateria: 26000, placaCarga: 22000 }
+    ]
+  }
+];
+
+/* ============================================================
+   RENDER DINÁMICO
+   ============================================================ */
+const listaEl = document.getElementById('lista');
+
+function formatearPrecio(valor) {
+  if (valor === null || valor === undefined) return null;
+  return '$' + valor.toLocaleString('es-AR');
+}
+
+function crearItem(label, tag, tagClass, precio) {
+  const precioTxt = formatearPrecio(precio);
+  return `
+    <div class="precio-item">
+      <span class="label">
+        ${label}
+        ${tag ? `<span class="tag ${tagClass}">${tag}</span>` : ''}
+      </span>
+      ${precioTxt
+        ? `<span class="precio">${precioTxt}</span>`
+        : `<span class="no-disp">No disponible</span>`}
+    </div>
+  `;
+}
+
+datos.forEach((marcaData, iMarca) => {
+  const marcaDiv = document.createElement('div');
+  marcaDiv.className = 'marca';
+
+  const modelosHTML = marcaData.modelos.map((m, iMod) => `
+    <div class="modelo">
+      <div class="modelo-header" data-toggle="modelo">
+        <h3>${m.nombre}</h3>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="modelo-body">
+        <div class="precios">
+          ${crearItem('Pantalla', 'Original', 'tag-original', m.pantallaOriginal)}
+          ${crearItem('Pantalla', 'Alternativa', 'tag-alternativa', m.pantallaAlternativa)}
+          ${crearItem('Batería', 'Original', 'tag-original', m.bateria)}
+          ${crearItem('Placa de carga', 'Original', 'tag-original', m.placaCarga)}
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  marcaDiv.innerHTML = `
+    <div class="marca-header" data-toggle="marca">
+      <h2>📱 ${marcaData.marca}</h2>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="marca-body">
+      ${modelosHTML}
+    </div>
+  `;
+
+  listaEl.appendChild(marcaDiv);
+});
+
+/* ============================================================
+   INTERACCIÓN ACORDEÓN
+   ============================================================ */
+document.querySelectorAll('[data-toggle="marca"]').forEach(header => {
+  header.addEventListener('click', () => {
+    header.parentElement.classList.toggle('open');
+  });
+});
+
+document.querySelectorAll('[data-toggle="modelo"]').forEach(header => {
+  header.addEventListener('click', (e) => {
+    e.stopPropagation();
+    header.parentElement.classList.toggle('open');
+  });
+});
+</script>
+
+</body>
+</html>
